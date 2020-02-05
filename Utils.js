@@ -2,11 +2,15 @@
 const utils = () =>{
 
     const resetForm = (form,selectpicker)=>{
-        $('#'+form+' input*').val('');
-        $('#'+form+' select option[value=""]').prop('selected', true);
+        form = form.replace('#','');
+        form = '#'+form;
+
+        $(form+' input*').val('');
+        $(form+' input[type="checkbox"]').prop('checked', false);
+        $(form+' select option[value=""]').prop('selected', true);        
 
         if( typeof selectpicker !== 'undefined' && selectpicker)
-            $('#'+form+' select').selectpicker('refresh');        
+            $(form+' select').selectpicker('refresh');        
     }
     
     const getObjectForm = (form, inputs)=>{
