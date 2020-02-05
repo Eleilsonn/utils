@@ -6,19 +6,37 @@ $(document).ready(function(){
     //name = Nome da tag
     //type = tipo de tag (input, select...)
     let formulario = [
-            {name:'nome',type:'input'},
-            {name:'email',type:'input'},
-            {name:'telefone',type:'input'},
-            {name:'cidade',type:'input'},
-            {name:'uf',type:'select'},
-            {name:'nascimento',type:'date'},
-            {name:'sexo',type:'radio'},
-            {name:'notificacao',type:'checkbox'},
-            {name:'alertas',type:'checkbox'}
+            {name:'nome',type:'input',validation:false},
+            {name:'email',type:'input',validation:true},
+            {name:'telefone',type:'input',validation:true},
+            {name:'cidade',type:'input',validation:true},
+            {name:'uf',type:'select',validation:true},
+            {name:'nascimento',type:'date',validation:true},
+            {name:'sexo',type:'radio',validation:true},
+            {name:'notificacao',type:'checkbox',validation:true},
+            {name:'alertas',type:'checkbox',validation:true}
         ]
     //PARAMETROS(ID_DO_FORMULARIO,ESPECIFICAÇÕES_DO_FORMULARIO)   
     methodUtils.setForm('form',formulario);
-   
+
+   //CONFIGURANDO BOOTSTRAP VALIDATOR
+   let fields =[
+       {name:'nome',msg:'Por favor preencha o nome!'},
+       {name:'email',msg:'Por favor preencha o email!'},
+       {name:'telefone',msg:'Por favor preencha o telefone!'},
+       {name:'cidade',msg:'Por favor preencha o cidade!'},
+       {name:'uf',msg:'Por favor selecione um estado!'},
+       {name:'nascimento',msg:'Por favor preencha uma data!'},
+       {name:'sexo',msg:'Por favor selecione um genero!'}
+   ]
+   let faIcon = {
+    valid: '',
+    invalid: '',
+    validating: ''
+    }
+    let excluded = [];
+   methodUtils.activeBootstrapValidator('form',fields,faIcon,excluded);
+   //FIM DA CONFIGURAÇÃO
     //DEFININDO O SELECT PICKER 
     $('select[name="uf"]').selectpicker();
 
@@ -76,6 +94,15 @@ $(document).ready(function(){
         }
         //METODO PREENCHER FORMULARIO, PARAMETROS(ID_DO_FORMULARIO, ESPECIFICAÇOES_DO_OBJETO, OBJETO, SELECTPICKER)
         methodUtils.setValuesInInputs('form',especification,obj,true);
+    })
+    //AÇÃO PARA VALIDAR FORMULARIO
+    $('button[name="validar"]').click(function(){
+        $('#form').submit();
+        if(methodUtils.validationForm('form')){
+            console.log("Todos os campos preenchidos!")
+        }else{
+            console.log("Possue algum campos em branco!")
+        }
     })
 
 })

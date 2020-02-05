@@ -137,12 +137,108 @@ const utils = () =>{
             })
         })
     }
+    const validationForm = (idForm)=>{
+        let form = idForm.replace(/\-/g,'_').replace('#','');
+        idForm = idForm.replace('#','');
+        idForm = '#'+idForm;
+        let inputs = forms[form];
+        let validation = true;
+        for(let i=0;i<inputs.length;i++){
+            let item = inputs[i];
+
+            if(typeof item.validation !== 'undefined'){
+                if(item.validation){
+                    switch(item.type){
+                        case 'input':
+                            validation = $(idForm+' input[name="'+item.name+'"]').val() != ''? true:false;
+                            break;
+                        case 'date':
+                            validation = $(idForm+' input[name="'+item.name+'"]').val() != ''? true:false;
+                            break;
+                        case 'select':
+                            validation = $(idForm+' select[name="'+item.name+'"]').val() != ''? true:false;
+                            break;
+                        case 'textarea':
+                            validation = $(idForm+' textarea[name="'+item.name+'"]').val() != ''? true:false;
+                            break;
+                        case 'checkbox':
+                            //validation = $(idForm+' input[name="'+item.name+'"]').val() != ''? true:false;
+                            break;
+                        case 'radio':
+                            validation = typeof $(idForm+' input[name="'+item.name+'"]:checked').val() === 'undefined'? false:true;
+                            break;
+                        default:
+                            validation = false;                           
+                            console.exception('Type undefined!',input); 
+                            break;
+                        break;                        
+                    }
+                   
+                    if(!validation){
+                        break;
+                    }
+                }
+            }else{                
+                console.exception("Validation undefined!",item);   
+                return false;             
+            } 
+        }      
+        return validation;
+    }
+
+    const activeBootstrapValidator = (idForm,fields,faIcon,excluded)=>{
+        idForm ='#'+idForm.replace('#','');
+       
+        let field ={};
+        
+        fields.forEach((item)=>{
+            field[item.name]={
+                validators: {
+                    notEmpty: {
+                        message: item.msg
+                    }
+                }
+            }
+        })       
+       console.log(field);
+        $(idForm).bootstrapValidator({
+            excluded: excluded,
+            feedbackIcons: faIcon,
+            fields: field
+        }).on('status.field.bv', function(e, data) {
+            var $form     = $(e.target),
+            validator = data.bv,
+            $tabPane  = data.element.parents('.tab-pane'),
+            tabId     = $tabPane.attr('id');
+            
+            
+            if (tabId) {
+                var $icon = $('a[href="#' + tabId + '"][data-toggle="tab"]').parent().find('i');
+                // Add custom class to tab containing the field
+            if (data.status == validator.STATUS_INVALID) {
+                $icon.removeClass(faIcon.valid).addClass(faIcon.invalid);
+                let help_block = $('small[class="help-block"]').css('text-color','red');
+            } else if (data.status == validator.STATUS_VALID) {
+                var isValidTab = validator.isValidContainer($tabPane);
+                $icon.removeClass(faIcon.valid).addClass(isValidTab ? faIcon.valid : faIcon.invalid);
+            }
+            }
+
+            if (data.status == validator.STATUS_INVALID) {   
+                 $('small[class="help-block"]').addClass('text-danger');
+            } else if (data.status == validator.STATUS_VALID) {                
+                //$icon.removeClass(faIcon.valid).addClass(isValidTab ? faIcon.valid : faIcon.invalid);
+            }
+        });
+    }
 
     return {
         resetForm,
         getObjectForm,
         setValuesInInputs,
-        setForm
+        setForm,
+        validationForm,
+        activeBootstrapValidator
     }
 }
 
